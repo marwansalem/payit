@@ -25,6 +25,7 @@ func toInternalRepresentation(account *models.Account) *inMemoryAccount {
 		Account: account,
 	}
 }
+
 func (accountData *InMemoryAccountDataManager) Create(account *models.Account) error {
 	_, alreadyExists := accountData.accounts.LoadOrStore(account.ID, toInternalRepresentation(account))
 	if alreadyExists {
@@ -44,11 +45,11 @@ func (accountData *InMemoryAccountDataManager) CreateBulk(accounts *[]*models.Ac
 }
 
 func (accountData *InMemoryAccountDataManager) GetByID(id string) (*models.Account, bool) {
-	value, ok := accountData.accounts.Load(id)
-	if ok {
-		return value.(*inMemoryAccount).Account, true
+	inMemoryAccount, exists := accountData.getInMemoryByID(id)
+	if !exists {
+		return nil, false
 	}
-	return nil, false
+	return inMemoryAccount.Account, true
 }
 
 func (accountData *InMemoryAccountDataManager) List() *[]*models.Account {
@@ -68,4 +69,12 @@ func (accountData *InMemoryAccountDataManager) Update(account *models.Account) e
 
 	accountData.accounts.Store(account.ID, toInternalRepresentation(account))
 	return nil
+}
+
+func (accountData *InMemoryAccountDataManager) getInMemoryByID(id string) (*inMemoryAccount, bool) {
+	value, ok := accountData.accounts.Load(id)
+	if ok {
+		return value.(*inMemoryAccount), true
+	}
+	return nil, false
 }

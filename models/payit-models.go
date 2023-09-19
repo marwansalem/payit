@@ -7,9 +7,9 @@ type Account struct {
 }
 
 type Transfer struct {
-	ID            string  `json:"id"`
-	FromAccountID string  `json:"from_account_id"`
-	ToAccountID   string  `json:"to_account_id"`
-	Amount        float64 `json:"amount"`
-	Succeeded     bool    `json:"succeeded"`
+	ID         string  `json:"id"`
+	SenderID   string  `json:"sender_id"`
+	ReceiverID string  `json:"receiver_id"`
+	Amount     float64 `json:"amount"`
+	Succeeded  bool    `json:"succeeded"`
 }
