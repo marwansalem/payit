@@ -3,7 +3,7 @@ package data
 import "github.com/marwansalem/payit/models"
 
 type AccountData interface {
-	Create(*models.Account) error
+	Create(*models.Account) (*models.Account, error)
 	CreateBulk(*[]*models.Account) error
 	Update(*models.Account) error
 	GetByID(string) (*models.Account, bool)
@@ -11,7 +11,7 @@ type AccountData interface {
 }
 
 type TransferData interface {
-	Create(*models.Transfer) error
+	Create(*models.Transfer) (*models.Transfer, error)
 	GetByID(id string) (*models.Transfer, bool)
 	List() *[]*models.Transfer
 }

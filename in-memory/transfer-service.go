@@ -3,7 +3,6 @@ package inmemory
 import (
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/marwansalem/payit/models"
 )
 
@@ -23,11 +22,9 @@ func (svc *TransferService) lockAndFetchAccount(accountID string) *inMemoryAccou
 	return accoount
 }
 
-func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount float64) (string, error) {
-	transferID := uuid.NewString()
+func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount float64) (*models.Transfer, error) {
 
 	transfer := &models.Transfer{
-		ID:         transferID,
 		SenderID:   senderID,
 		ReceiverID: receiverID,
 		Amount:     amount,
@@ -36,44 +33,44 @@ func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount flo
 
 	go svc.Transfers.Create(transfer)
 	if senderID == receiverID {
-		return transfer.ID, fmt.Errorf("cannot transfer to self")
+		return transfer, fmt.Errorf("cannot transfer to self")
 	}
 
 	if amount == 0 {
-		return transferID, fmt.Errorf("cannot transfer 0")
+		return transfer, fmt.Errorf("cannot transfer 0")
 	}
 
 	if amount < 0 {
-		return transferID, fmt.Errorf("amount must be positive")
+		return transfer, fmt.Errorf("amount must be positive")
 	}
 
-	senderAccount, ok := svc.Accounts.getInMemoryByID(senderID)
-	if !ok {
-		return transferID, fmt.Errorf("could not find sender %s", senderID)
+	_, senderExists := svc.Accounts.getInMemoryByID(senderID)
+	if !senderExists {
+		return transfer, fmt.Errorf("could not find sender %s", senderID)
 	}
 
-	receiverAccount, ok := svc.Accounts.getInMemoryByID(senderID)
-	if !ok {
-		return transferID, fmt.Errorf("could not find receiver %s", receiverID)
+	_, receiverExists := svc.Accounts.getInMemoryByID(senderID)
+	if !receiverExists {
+		return transfer, fmt.Errorf("could not find receiver %s", receiverID)
 
 	}
 
 	// refetch account after Locking to ensure we have the latest balance, that will not changed until the transaction is over
-	senderAccount = svc.lockAndFetchAccount(senderID)
+	senderAccount := svc.lockAndFetchAccount(senderID)
 	if senderAccount.Account.Balance < amount {
 		senderAccount.Lock.Unlock()
-		return transferID, fmt.Errorf("sender %s does not have enough balance, transfer amount: %f, balance: %f", senderAccount.ID, amount, senderAccount.Balance)
+		return transfer, fmt.Errorf("sender %s does not have enough balance, transfer amount: %f, balance: %f", senderAccount.ID, amount, senderAccount.Balance)
 	}
 	senderAccount.Account.Balance -= amount
 	svc.Accounts.Update(senderAccount.Account)
 	senderAccount.Lock.Unlock()
 
-	receiverAccount = svc.lockAndFetchAccount(receiverID)
+	receiverAccount := svc.lockAndFetchAccount(receiverID)
 	receiverAccount.Account.Balance += amount
 	svc.Accounts.Update(receiverAccount.Account)
 	receiverAccount.Lock.Unlock()
 
 	transfer.Succeeded = true
 	go svc.Transfers.Update(transfer)
-	return transferID, nil
+	return transfer, nil
 }

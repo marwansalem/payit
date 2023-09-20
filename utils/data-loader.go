@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -58,9 +57,6 @@ func LoadAccounts(accountData data.AccountData, filePath string) error {
 	accounts, err := loadAccountsFromFile(filePath)
 	if err != nil {
 		return err
-	}
-	for _, acc := range *accounts {
-		fmt.Printf("%v\n", acc)
 	}
 	return accountData.CreateBulk(accounts)
 }

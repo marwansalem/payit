@@ -68,12 +68,11 @@ func (controller *AccountController) Create(c *gin.Context) {
 		return
 	}
 
-	_, alreadyExists := controller.Accounts.GetByID(account.ID)
-
-	if alreadyExists {
-		c.AbortWithStatusJSON(http.StatusConflict, gin.H{
-			"message": fmt.Sprintf("account %s already exists", account.ID),
-		})
+	if account.ID != "" {
+		message := "ID is not allowed in request body, will be assigned after creation"
+		log.Print(message)
+		BadRequest(c, message)
+		return
 	}
 
 	if account.Balance < 0 {
@@ -82,14 +81,14 @@ func (controller *AccountController) Create(c *gin.Context) {
 		return
 	}
 
-	err = controller.Accounts.Create(account)
+	account, err = controller.Accounts.Create(account)
 	if err != nil {
 		log.Printf("Error occurred while creating account %s, %v", account.ID, err)
 
 		ErrorResponse(c, err)
 		return
 	}
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, account)
 }
 
 func (controller *AccountController) Update(c *gin.Context) {
@@ -98,14 +97,6 @@ func (controller *AccountController) Update(c *gin.Context) {
 		log.Printf("Failed to update account %s, invalid account: %v", account.ID, err)
 		BadRequest(c, err.Error())
 		return
-	}
-
-	_, alreadyExists := controller.Accounts.GetByID(account.ID)
-
-	if alreadyExists {
-		c.AbortWithStatusJSON(http.StatusConflict, gin.H{
-			"message": fmt.Sprintf("account %s already exists", account.ID),
-		})
 	}
 
 	if account.Balance < 0 {

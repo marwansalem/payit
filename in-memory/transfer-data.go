@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/marwansalem/payit/models"
 )
 
@@ -16,6 +17,7 @@ type inMemoryTransferDataManager struct {
 }
 
 func (transferData *inMemoryTransferDataManager) Create(transfer *models.Transfer) error {
+	transfer.ID = uuid.NewString()
 	_, alreadyExists := transferData.transfers.LoadOrStore(transfer.ID, transfer)
 	if !alreadyExists {
 		return fmt.Errorf("transfer %v does not exist", transfer.ID)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/marwansalem/payit/models"
 )
 
@@ -26,17 +27,20 @@ func toInternalRepresentation(account *models.Account) *inMemoryAccount {
 	}
 }
 
-func (accountData *InMemoryAccountDataManager) Create(account *models.Account) error {
+func (accountData *InMemoryAccountDataManager) Create(account *models.Account) (*models.Account, error) {
+	if account.ID == "" {
+		account.ID = uuid.NewString()
+	}
 	_, alreadyExists := accountData.accounts.LoadOrStore(account.ID, toInternalRepresentation(account))
 	if alreadyExists {
-		return fmt.Errorf("account %v already exists", account.ID)
+		return nil, fmt.Errorf("account %v already exists", account.ID)
 	}
-	return nil
+	return account, nil
 }
 
 func (accountData *InMemoryAccountDataManager) CreateBulk(accounts *[]*models.Account) error {
 	for _, account := range *accounts {
-		err := accountData.Create(account)
+		_, err := accountData.Create(account)
 		if err != nil {
 			return err
 		}
