@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	inMemoryAccountDataManager := &inmemory.InMemoryAccountDataManager{}
 	inMemoryAccountDataManager.Init()
 	err := utils.LoadAccounts(inMemoryAccountDataManager, "./accounts.json")
