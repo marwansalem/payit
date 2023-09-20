@@ -23,7 +23,6 @@ func loadAccountsFromFile(filePath string) (*[]*models.Account, error) {
 		return nil, err
 	}
 
-	// Define a custom type to perform the balance conversion
 	type accountJSON struct {
 		ID      string `json:"id"`
 		Name    string `json:"name"`
