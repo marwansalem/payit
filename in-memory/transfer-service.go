@@ -22,6 +22,7 @@ func (svc *TransferService) lockAndFetchAccount(accountID string) *inMemoryAccou
 	return accoount
 }
 
+// TODO define the standard errors, so they can be used by other implementation of TransferService
 func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount float64) (*models.Transfer, error) {
 
 	transfer := &models.Transfer{
@@ -36,22 +37,18 @@ func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount flo
 		return transfer, fmt.Errorf("cannot transfer to self")
 	}
 
-	if amount == 0 {
-		return transfer, fmt.Errorf("cannot transfer 0")
-	}
-
-	if amount < 0 {
+	if amount <= 0 {
 		return transfer, fmt.Errorf("amount must be positive")
 	}
 
 	_, senderExists := svc.Accounts.getInMemoryByID(senderID)
 	if !senderExists {
-		return transfer, fmt.Errorf("could not find sender %s", senderID)
+		return transfer, fmt.Errorf("could not find sender")
 	}
 
-	_, receiverExists := svc.Accounts.getInMemoryByID(senderID)
+	_, receiverExists := svc.Accounts.getInMemoryByID(receiverID)
 	if !receiverExists {
-		return transfer, fmt.Errorf("could not find receiver %s", receiverID)
+		return transfer, fmt.Errorf("could not find receiver")
 
 	}
 
