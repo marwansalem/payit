@@ -29,7 +29,7 @@ func main() {
 	accountRoutes.GET("", accountController.GetAll)
 	accountRoutes.GET(":id", accountController.Get)
 	accountRoutes.POST("", accountController.Create)
-	accountRoutes.PUT("", accountController.Update)
+	accountRoutes.PUT(":id", accountController.Update)
 	router.Run(":8080")
 
 }

@@ -92,7 +92,13 @@ func (controller *AccountController) Create(c *gin.Context) {
 }
 
 func (controller *AccountController) Update(c *gin.Context) {
+	id := c.Param("id")
 	account, err := controller.parseAccount(c)
+
+	if id != account.ID {
+		BadRequest(c, "id in endpoint does not match id in request body")
+		return
+	}
 	if err != nil {
 		log.Printf("Failed to update account %s, invalid account: %v", account.ID, err)
 		BadRequest(c, err.Error())
