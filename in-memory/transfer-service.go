@@ -8,7 +8,7 @@ import (
 
 type TransferService struct {
 	Accounts  *InMemoryAccountDataManager
-	Transfers *inMemoryTransferDataManager
+	Transfers *InMemoryTransferDataManager
 }
 
 func (svc *TransferService) lockAndFetchAccount(accountID string) *inMemoryAccount {

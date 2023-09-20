@@ -12,20 +12,24 @@ type inMemoryTransfer struct {
 	*models.Transfer
 }
 
-type inMemoryTransferDataManager struct {
+type InMemoryTransferDataManager struct {
 	transfers *sync.Map
 }
 
-func (transferData *inMemoryTransferDataManager) Create(transfer *models.Transfer) error {
+func (transferData *InMemoryTransferDataManager) Init() {
+	transferData.transfers = &sync.Map{}
+}
+
+func (transferData *InMemoryTransferDataManager) Create(transfer *models.Transfer) (*models.Transfer, error) {
 	transfer.ID = uuid.NewString()
 	_, alreadyExists := transferData.transfers.LoadOrStore(transfer.ID, transfer)
 	if !alreadyExists {
-		return fmt.Errorf("transfer %v does not exist", transfer.ID)
+		return nil, fmt.Errorf("transfer %v does not exist", transfer.ID)
 	}
-	return nil
+	return transfer, nil
 }
 
-func (transferData *inMemoryTransferDataManager) GetByID(id string) (*models.Transfer, bool) {
+func (transferData *InMemoryTransferDataManager) GetByID(id string) (*models.Transfer, bool) {
 	value, ok := transferData.transfers.Load(id)
 	if ok {
 		return value.(*inMemoryTransfer).Transfer, true
@@ -33,7 +37,7 @@ func (transferData *inMemoryTransferDataManager) GetByID(id string) (*models.Tra
 	return nil, false
 }
 
-func (transferData *inMemoryTransferDataManager) List() *[]*models.Transfer {
+func (transferData *InMemoryTransferDataManager) List() *[]*models.Transfer {
 	transfers := []*models.Transfer{}
 	transferData.transfers.Range(func(_, value interface{}) bool {
 		transfers = append(transfers, value.(*inMemoryTransfer).Transfer)
@@ -42,7 +46,7 @@ func (transferData *inMemoryTransferDataManager) List() *[]*models.Transfer {
 	return &transfers
 }
 
-func (transferData *inMemoryTransferDataManager) Update(transfer *models.Transfer) error {
+func (transferData *InMemoryTransferDataManager) Update(transfer *models.Transfer) error {
 	_, alreadyExists := transferData.transfers.Load(transfer.ID)
 	if !alreadyExists {
 		return fmt.Errorf("transfer %v does not exist", transfer.ID)
