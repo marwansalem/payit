@@ -122,6 +122,11 @@ This document provides information about the endpoints available in the PayIt AP
     "amount": 500.0,
   }
 
+## API Test
+  * A collection of requests is provided.
+  * For [Postman](./PayIT_postman.json)
+  * For [ThunderClient](./PayIT_thunderclient.json)
+
 # Running PayIt
 
 To run the PayIt program, follow these steps:

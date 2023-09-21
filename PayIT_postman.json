@@ -1,0 +1,135 @@
+{
+    "info": {
+        "name": "PayIt",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "Accounts",
+            "item": [
+                {
+                    "name": "Create Account",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "localhost:8080/accounts",
+                            "path": [
+                                "accounts"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"name\": \"emad\",\n  \"balance\": \"20000\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Account",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "localhost:8080/accounts/9d9254ae-3115-414c-ae78-6bddc84a539b",
+                            "path": [
+                                "accounts",
+                                "9d9254ae-3115-414c-ae78-6bddc84a539b"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        }
+                    }
+                },
+                {
+                    "name": "Get All",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "localhost:8080/accounts",
+                            "path": [
+                                "accounts"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transfers",
+            "item": [
+                {
+                    "name": "Make Transfer",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "localhost:8080/transfers",
+                            "path": [
+                                "transfers"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            },
+                            "raw": "{\n  \"sender_id\": \"9d9254ae-3115-414c-ae78-6bddc84a539b\",\n  \"receiver_id\": \"97f20f9b-8eaa-4c73-8d2b-2846708eeef3\",\n  \"amount\": 300\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Transfer",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "localhost:8080/transfers/b2fbcdd0-f792-4c9e-97ad-a27afa2fd129",
+                            "path": [
+                                "transfers",
+                                "b2fbcdd0-f792-4c9e-97ad-a27afa2fd129"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Transfers",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "localhost:8080/transfers",
+                            "path": [
+                                "transfers"
+                            ],
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
