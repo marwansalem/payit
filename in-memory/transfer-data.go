@@ -8,10 +8,6 @@ import (
 	"github.com/marwansalem/payit/models"
 )
 
-type inMemoryTransfer struct {
-	*models.Transfer
-}
-
 type InMemoryTransferDataManager struct {
 	transfers *sync.Map
 }
@@ -23,8 +19,8 @@ func (transferData *InMemoryTransferDataManager) Init() {
 func (transferData *InMemoryTransferDataManager) Create(transfer *models.Transfer) (*models.Transfer, error) {
 	transfer.ID = uuid.NewString()
 	_, alreadyExists := transferData.transfers.LoadOrStore(transfer.ID, transfer)
-	if !alreadyExists {
-		return nil, fmt.Errorf("transfer %v does not exist", transfer.ID)
+	if alreadyExists {
+		return nil, fmt.Errorf("transfer %v already exists", transfer.ID)
 	}
 	return transfer, nil
 }
@@ -32,7 +28,7 @@ func (transferData *InMemoryTransferDataManager) Create(transfer *models.Transfe
 func (transferData *InMemoryTransferDataManager) GetByID(id string) (*models.Transfer, bool) {
 	value, ok := transferData.transfers.Load(id)
 	if ok {
-		return value.(*inMemoryTransfer).Transfer, true
+		return value.(*models.Transfer), true
 	}
 	return nil, false
 }
@@ -40,7 +36,7 @@ func (transferData *InMemoryTransferDataManager) GetByID(id string) (*models.Tra
 func (transferData *InMemoryTransferDataManager) List() *[]*models.Transfer {
 	transfers := []*models.Transfer{}
 	transferData.transfers.Range(func(_, value interface{}) bool {
-		transfers = append(transfers, value.(*inMemoryTransfer).Transfer)
+		transfers = append(transfers, value.(*models.Transfer))
 		return true
 	})
 	return &transfers

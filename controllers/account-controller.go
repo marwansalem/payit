@@ -56,14 +56,13 @@ func (controller *AccountController) Get(c *gin.Context) {
 
 func (controller *AccountController) GetAll(c *gin.Context) {
 	accounts := controller.Accounts.List()
-
 	c.JSON(http.StatusOK, accounts)
 }
 
 func (controller *AccountController) Create(c *gin.Context) {
 	account, err := controller.parseAccount(c)
 	if err != nil {
-		log.Printf("Failed to create account %s, cannot parse request body %v", account.ID, err)
+		log.Printf("Failed to create account, cannot parse request body %v", err)
 		BadRequest(c, err.Error())
 		return
 	}

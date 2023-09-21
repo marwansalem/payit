@@ -20,6 +20,7 @@ func main() {
 	}
 	log.Printf("Ready to receive requests")
 
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	accountController := &controllers.AccountController{

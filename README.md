@@ -1,3 +1,20 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [PayIt API Documentation](#payit-api-documentation)
+  - [Endpoints](#endpoints)
+    - [Accounts](#accounts)
+      - [Get Account by ID](#get-account-by-id)
+      - [Get All Accounts](#get-all-accounts)
+      - [Create Account](#create-account)
+      - [Update Account by ID](#update-account-by-id)
+    - [Transfers](#transfers)
+      - [Get Transfer by ID](#get-transfer-by-id)
+      - [Get All Transfers](#get-all-transfers)
+      - [Create Transfer](#create-transfer)
+- [Unit Tests](#unit-tests)
+- [In-Memory Data](#in-memory-data)
+- [Concurrency](#concurrency)
 # PayIt API Documentation
 
 This document provides information about the endpoints available in the PayIt API, as well as the data models/entities used in the API.
@@ -43,9 +60,6 @@ This document provides information about the endpoints available in the PayIt AP
     "balance": "1000.00"
   }
   ```
-
-  - **Note:** The `id` field is optional when creating an account. If not provided, it will be auto-generated upon creation.
-
 
 #### Update Account by ID
 
@@ -108,3 +122,45 @@ This document provides information about the endpoints available in the PayIt AP
     "amount": 500.0,
   }
 
+# Running PayIt
+
+To run the PayIt program, follow these steps:
+
+1. Using source code
+
+   ```bash
+   go run main.go
+
+2. Build and run executable
+   ```bash
+   go build -o payit
+   ./payit
+   ```
+3. Server starts on port `8080`
+  - **Note:** The application loads `accounts.json` data into the memory, if successful this message will be logged: `Ready to receive requests`.
+  - **Note:** Optionally replace `accounts.json` with your own `accounts.json` file, but it should follow the same format, before running.
+# Unit Tests
+
+To run unit tests run:
+
+   ```bash
+   go test ./...
+   ```
+# In-Memory Data
+
+Go's `sync.Map` is used as the main structure for holding Accounts & Transfers entities.
+
+There is a separate for each kind of entity.
+
+`sync.Map` facilitates concurrent read and write access to the data .
+
+# Concurrency
+The transfer must carefully modify the sender and receiver accounts. 
+
+This is done by introducing a `mutex.Lock` for each account. This means that the locking granularity is on the **row** level.
+
+Transfers include locking the sender's account, inspecting their balance, and then deducting the transfer amount, and finally and unlocking the sender's account.
+
+As for the receiver, their account is locked until their balance is updated, to ensure that there are no write after write issues, and finally ublocking the receiver's account.
+
+As for fetching and creating accounts and transfers, the concurrency is handled by the `sync.Map` 

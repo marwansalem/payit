@@ -32,7 +32,10 @@ func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount flo
 		Succeeded:  false,
 	}
 
-	go svc.Transfers.Create(transfer)
+	transfer, err := svc.Transfers.Create(transfer)
+	if err != nil {
+		return transfer, err
+	}
 	if senderID == receiverID {
 		return transfer, fmt.Errorf("cannot transfer to self")
 	}
@@ -68,6 +71,6 @@ func (svc *TransferService) MakeTransfer(senderID, receiverID string, amount flo
 	receiverAccount.Lock.Unlock()
 
 	transfer.Succeeded = true
-	go svc.Transfers.Update(transfer)
+	svc.Transfers.Update(transfer)
 	return transfer, nil
 }
